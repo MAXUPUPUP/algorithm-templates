@@ -1,5 +1,7 @@
 //分迭代版本和递归版本
 //这里是大根堆
+//时间复杂度 O(nlogn)，空间复杂度 O(1)，不稳定排序。
+
 #include<iostream>
 using namespace std;
 
