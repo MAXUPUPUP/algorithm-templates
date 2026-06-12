@@ -25,7 +25,7 @@ int binary_search2(int l, int r){
     return l;
 }
 
-
+//atcoder Meguru
 long long ok = 666;   // 一个确定满足条件的值
 long long ng = 666;   // 一个确定不满足条件的值
 int Meguru_binary_search(){
