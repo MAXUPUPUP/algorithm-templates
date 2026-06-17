@@ -1,7 +1,7 @@
 #include<iostream>
 using namespace std;
 
-
+//LC.42 接雨水
 //1.对撞指针
 int n = 0;
 int l = 0, r = n - 1;
@@ -11,8 +11,8 @@ while(l < r){
     else r --;
 }
 
-//2.快慢指针
 
+//2.快慢指针
 int slow = 0;
 for(int fast = 0; fast < n; fast ++){
     if(){
@@ -25,7 +25,7 @@ for(int fast = 0; fast < n; fast ++){
 int l = 0;
 for(int r = 0; r < n; r ++){
     //a[r]进入窗口，更新状态。
-    while(//窗口不合法){
+    while(窗口不合法){
         //a[l]离开窗口，更新状态。
         l ++;
     }
