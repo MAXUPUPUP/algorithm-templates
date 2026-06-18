@@ -1,8 +1,17 @@
 #include<iostream>
 #include<vector>
+#include <unordered_map>
+#include <deque>
+#include <set>
+#include <set>
 using namespace std;
+//right 右移扩大窗口 → 更新窗口状态 → 不合法时 left 右移收缩 → 记录答案
+//什么时候收缩:定长用 if,变长用 while
+//窗口状态是什么:和(sum)、计数表(map)、覆盖数(valid)、单调队列……
+//答案怎么记:求最值、求个数(right-left+1)、求方案
 
 //模板一:固定窗口大小k
+//LC 643
 int fixedWindow(vector<int>& nums, int k){
     int sum = 0, res = 0;
     for(int i = 0; i < nums.size(); i ++){
@@ -14,3 +23,93 @@ int fixedWindow(vector<int>& nums, int k){
     }
     return res;
 }
+
+//LC209
+// 模板二:可变窗口(满足条件时收缩)
+int variablewindows(vector<int>& nums, int target){
+    int sum = 0, res = INT_MAX;
+    for(int i = 0, j = 0; i < nums.size(); i ++){
+        sum += nums[i];
+        while(sum >= target){// 不满足约束就收缩
+            res = min(res, i - j + 1);
+            sum -= nums[j ++];// 缩小窗口
+        }
+    }
+    return res == INT_MAX ? 0 : res;
+    
+
+
+}
+//LC3
+// 模板三:子串/无重复(用哈希表统计)
+int longestSubstring(string s){
+    unordered_map<char, int> hash;
+    int res = 0;
+    for(int i = 0, j = 0; i < s.size(); i ++){
+        hash[s[i]] ++;
+        while(hash[s[i]] > 1){
+            hash[s[j ++]] --;
+        }
+        res = max(res, i - j + 1);
+    }
+    return res;
+}
+
+//LC992
+// 模板四:恰好/最多约束(求"恰好K个"= 最多K个 - 最多K-1个)
+int atMostK(vector<int>& nums, int k){
+    int res = 0;
+    unordered_map<int, int> hash;
+    for(int i = 0, j = 0; i < nums.size(); i ++){
+        hash[nums[i]] ++;
+        if(hash[nums[i]] == 1) k --;//新元素，约束条件-1
+        while(k < 0){
+            if(--hash[nums[j ++]] == 0) k ++;
+        }
+        res += i - j + 1;//满足约束条件的子数组个数
+    }
+    return res;
+}// 恰好K个 = atMostK(k) - atMostK(k-1)
+
+//LC76
+// 模板五:覆盖型(最小覆盖子串,need 计数)
+string minCover(string s, string t){
+    unordered_map<char, int> need, win;
+    for(char c : t) need[c] ++;
+    int valid = 0, start = 0, len = INT_MAX;
+    for(int i = 0, j = 0; i < s.size(); i ++){
+        char c = s[i];
+        if(need.count(c) && ++win[c] == need[c]) valid ++;//窗口状态更新
+        while(valid == need.size()){
+            if(i - j + 1 < len){
+                start = j;
+                len = i - j + 1;
+            }
+            char d = s[j ++];
+            if(need.count(d) && win[d]-- == need[d]) valid --;
+        }
+    }
+    return len == INT_MAX ? "" : s.substr(start, len);
+}
+
+//LC239
+// 模板六:单调队列(滑动窗口最大值,维护递减队列)
+vector<int> maxSlidingwindow(vector<int>& nums, int k){
+    deque<int> dq;
+    vector<int> res;
+    for(int i = 0; i < nums.size(); i ++){
+        while(!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
+        dq.push_back(i);
+        if(dq.front() <= i - k) dq.pop_front();
+        if(i >= k - 1) res.push_back(nums[dq.front()]);
+    }
+    return res;
+}
+
+
+// LC 480滑动窗口中位数
+//模板七:有序窗口(multiset / 平衡树) 
+//— 当你需要窗口内的"第 k 大""中位数""刚好大于某值的元素",单调队列只能给最值,这时用 multiset:
+// LC 480 滑动窗口中位数
+multiset<int> win;  // 自动有序,可二分定位中位数
+// 入窗 win.insert(x); 出窗 win.erase(win.find(y));
